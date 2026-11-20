@@ -1,0 +1,33 @@
+{
+  "from": "ShrimpAPI <hello@yourdomain.com>",
+  "reply_to": "support@yourdomain.com",
+  "subject": "{{name}}，欢迎使用 {{product}} · {{plan}}",
+  "html": "welcome.html",
+  "text": "welcome.txt",
+  "variables": {
+    "product": "ShrimpAPI",
+    "plan": "基础版",
+    "coupon": "WELCOME10",
+    "login_url": "https://yourdomain.com/login",
+    "show_coupon": true
+  },
+  "rules": [
+    {
+      "match": "*@example.com",
+      "variables": { "plan": "团队版", "coupon": "TEAM20" }
+    },
+    {
+      "match": "alice@example.com",
+      "variables": { "coupon": "ALICE30" }
+    }
+  ],
+  "recipients": [
+    { "email": "alice@example.com", "name": "Alice" },
+    {
+      "email": "bob@example.com",
+      "name": "Bob",
+      "variables": { "plan": "专业版", "coupon": "BOB50" }
+    },
+    "carol@example.net"
+  ]
+}

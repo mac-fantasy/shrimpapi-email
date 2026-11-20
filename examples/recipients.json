@@ -1,0 +1,8 @@
+[
+  {
+    "email": "alice@example.com",
+    "name": "Alice",
+    "variables": { "coupon": "PERSONAL40" }
+  },
+  "bob@example.net"
+]

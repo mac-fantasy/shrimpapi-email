@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>欢迎使用 {{product}}</title>
+  </head>
+  <body style="margin:0;padding:32px 16px;background:#f4f6f8;color:#172b4d;font-family:Arial,'PingFang SC',sans-serif;">
+    <table role="presentation" style="width:100%;max-width:560px;margin:0 auto;border-collapse:collapse;background:#fff;">
+      <tr>
+        <td style="padding:32px;">
+          <p style="margin:0 0 24px;color:#087f8c;font-size:14px;font-weight:bold;">{{product}}</p>
+          <h1 style="margin:0 0 20px;font-size:24px;">你好，{{name}}！</h1>
+          <p style="line-height:1.8;">欢迎加入 {{product}}。你当前的方案是 <strong>{{plan}}</strong>。</p>
+          {{#if show_coupon}}
+          <p style="padding:16px;background:#edf8f7;line-height:1.8;">你的专属优惠码：<strong>{{coupon}}</strong></p>
+          {{/if}}
+          <p style="margin:28px 0;"><a href="{{login_url}}" style="display:inline-block;padding:12px 24px;background:#087f8c;color:#fff;text-decoration:none;border-radius:6px;">进入控制台</a></p>
+          <p style="margin:28px 0 0;color:#64748b;font-size:12px;line-height:1.8;">此邮件发送至 {{email}}。如需帮助，请直接回复本邮件。</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
