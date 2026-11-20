@@ -2,6 +2,8 @@
 
 使用 Rust 和 **egui / eframe** 实现的纯桌面邮件发送应用。启动后直接进入图形界面，邮件配置、收件人管理、模板编辑、预览、发送和报告导出均在窗口中完成。
 
+界面使用 ShrimpAPI 原始品牌 Logo；应用图标裁切自左侧虾形和双向箭头，并提供完整的 macOS / Retina 图标尺寸。素材和重新生成方法见 [assets/brand](assets/brand/README.md)。
+
 ## 安装与更新
 
 支持 macOS 11 或更新版本，安装包同时包含 Apple Silicon 和 Intel 架构。

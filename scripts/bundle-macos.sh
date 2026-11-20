@@ -30,7 +30,8 @@ else
     if [ "$profile" = release ]; then cargo build --locked --release; else cargo build --locked; fi
 fi
 bundle="target/ShrimpAPI Email.app"
-mkdir -p "$bundle/Contents/MacOS"
+mkdir -p "$bundle/Contents/MacOS" "$bundle/Contents/Resources"
+cp assets/brand/AppIcon.icns "$bundle/Contents/Resources/AppIcon.icns"
 if [ "$universal" = true ]; then
     lipo -create "target/aarch64-apple-darwin/$profile/shrimpapi-email" \
         "target/x86_64-apple-darwin/$profile/shrimpapi-email" \
@@ -47,6 +48,7 @@ cat > "$bundle/Contents/Info.plist" <<'PLIST'
   <key>CFBundleName</key><string>ShrimpAPI Email</string>
   <key>CFBundleDisplayName</key><string>ShrimpAPI Email</string>
   <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundleShortVersionString</key><string>0.0.0</string>
   <key>CFBundleVersion</key><string>0.0.0</string>
   <key>LSMinimumSystemVersion</key><string>11.0</string>

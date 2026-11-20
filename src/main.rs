@@ -2,6 +2,7 @@
 
 use std::process::ExitCode;
 
+mod branding;
 mod gui;
 
 fn main() -> ExitCode {

@@ -8,6 +8,7 @@ use std::{
 use anyhow::{Context, Result};
 use eframe::egui::{self, Color32, RichText, Stroke, Vec2};
 
+use crate::branding;
 use shrimpapi_email::{
     CloudflareSmtp, PreparedEmail, SendReport, SendStatus,
     client::{SMTP_HOST, SMTP_PORT, SendResult},
@@ -33,12 +34,14 @@ pub fn run() -> Result<()> {
     fs::create_dir_all(&store.directory)?;
     let window_path = store.window_path();
     let token = SystemCredentialStore.load();
+    let icon = branding::window_icon()?;
     eframe::run_native(
         "ShrimpAPI Email",
         eframe::NativeOptions {
             persistence_path: Some(window_path),
             viewport: egui::ViewportBuilder::default()
                 .with_app_id(shrimpapi_email::settings::APP_ID)
+                .with_icon(icon)
                 .with_inner_size([1360.0, 880.0])
                 .with_min_inner_size([1040.0, 700.0]),
             ..Default::default()
@@ -91,6 +94,7 @@ enum Event {
 }
 
 struct EmailApp {
+    logo: Option<egui::TextureHandle>,
     draft: CampaignEditor,
     library: TemplateLibrary,
     selected_template: Option<u64>,
@@ -125,6 +129,7 @@ impl EmailApp {
         let preview = draft.prepare().unwrap_or_default();
         let preview_source = (!preview.is_empty()).then(|| draft.clone());
         Self {
+            logo: None,
             library: TemplateLibrary::default(),
             selected_template: Some(1),
             store: None,
@@ -456,12 +461,23 @@ impl EmailApp {
     fn sidebar(&mut self, ui: &mut egui::Ui) {
         ui.visuals_mut().override_text_color = Some(Color32::from_rgb(218, 230, 237));
         ui.add_space(12.0);
-        ui.label(
-            RichText::new("ShrimpAPI")
-                .size(26.0)
-                .strong()
-                .color(Color32::WHITE),
-        );
+        let logo = self
+            .logo
+            .get_or_insert_with(|| branding::logo_texture(ui.ctx()));
+        egui::Frame::new()
+            .fill(Color32::WHITE)
+            .corner_radius(10)
+            .inner_margin(8)
+            .show(ui, |ui| {
+                let width = ui.available_width();
+                let height = width * logo.size_vec2().y / logo.size_vec2().x;
+                ui.add(
+                    egui::Image::new((logo.id(), logo.size_vec2()))
+                        .fit_to_exact_size(Vec2::new(width, height))
+                        .alt_text("ShrimpAPI Logo"),
+                );
+            });
+        ui.add_space(8.0);
         ui.label(
             RichText::new("EMAIL STUDIO")
                 .size(11.0)
@@ -1348,7 +1364,12 @@ impl EmailApp {
             .exact_size(210.0)
             .resizable(false)
             .frame(egui::Frame::new().fill(INK).inner_margin(22))
-            .show(ui, |ui| self.sidebar(ui));
+            .show(ui, |ui| {
+                egui::ScrollArea::vertical()
+                    .id_salt("sidebar-scroll")
+                    .auto_shrink([false, false])
+                    .show(ui, |ui| self.sidebar(ui));
+            });
         egui::Panel::top("toolbar")
             .frame(egui::Frame::new().fill(Color32::WHITE).inner_margin(20))
             .show(ui, |ui| self.toolbar(ui));

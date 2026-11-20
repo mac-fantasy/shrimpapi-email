@@ -1,6 +1,6 @@
 [package]
 name = "shrimpapi-email"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 description = "GUI email client for Cloudflare SMTP with per-recipient templates"
 rust-version = "1.95"
