@@ -1,32 +1,43 @@
 {
   "from": "ShrimpAPI <hello@yourdomain.com>",
   "reply_to": "support@yourdomain.com",
-  "subject": "{{name}}，欢迎使用 {{product}} · {{plan}}",
-  "html": "welcome.html",
-  "text": "welcome.txt",
+  "subject": "{{name}}，欢迎注册 {{product}}",
+  "html": "../assets/templates/new-user-registration.html",
+  "text": "../assets/templates/new-user-registration.txt",
   "variables": {
     "product": "ShrimpAPI",
-    "plan": "基础版",
-    "coupon": "WELCOME10",
-    "login_url": "https://yourdomain.com/login",
-    "show_coupon": true
+    "support_email": "support@yourdomain.com",
+    "welcome_message": "感谢注册，欢迎开始使用模型 API 服务。",
+    "console_url": "https://yourdomain.com/console",
+    "docs_url": "https://yourdomain.com/docs"
   },
   "rules": [
     {
       "match": "*@example.com",
-      "variables": { "plan": "团队版", "coupon": "TEAM20" }
+      "variables": {
+        "welcome_message": "欢迎加入团队，前往控制台开始协作。",
+        "docs_url": "https://yourdomain.com/docs/team"
+      }
     },
     {
       "match": "alice@example.com",
-      "variables": { "coupon": "ALICE30" }
+      "variables": {
+        "console_url": "https://yourdomain.com/console/alice"
+      }
     }
   ],
   "recipients": [
-    { "email": "alice@example.com", "name": "Alice" },
+    {
+      "email": "alice@example.com",
+      "name": "Alice"
+    },
     {
       "email": "bob@example.com",
       "name": "Bob",
-      "variables": { "plan": "专业版", "coupon": "BOB50" }
+      "variables": {
+        "welcome_message": "欢迎使用专业服务，如需接入帮助请联系我们。",
+        "console_url": "https://yourdomain.com/console/bob"
+      }
     },
     "carol@example.net"
   ]

@@ -68,48 +68,92 @@ pub struct TemplateLibrary {
 
 impl Default for TemplateLibrary {
     fn default() -> Self {
-        let welcome = CampaignEditor::example().expect("embedded example is valid");
-        let mut templates = vec![SavedTemplate {
-            id: 1,
-            name: "欢迎邮件".into(),
-            favorite: true,
-            content: TemplateContent::capture(&welcome),
-        }];
-        for (id, name, subject, body, variables) in [
-            (
-                2,
-                "通知邮件",
-                "{{name}}，{{title}}",
-                "你好，{{name}}！\n\n{{message}}\n\n{{product}}",
-                vec![
-                    ("title", "服务通知"),
-                    ("message", "我们有一条新消息要告诉你。"),
-                    ("product", "ShrimpAPI"),
-                ],
-            ),
-            (
-                3,
-                "活动推广",
-                "{{name}}，{{product}} 为你准备了专属优惠",
-                "你好，{{name}}！\n\n{{offer}}\n优惠码：{{coupon}}\n活动地址：{{url}}",
-                vec![
-                    ("product", "ShrimpAPI"),
-                    ("offer", "感谢你的支持，领取本次活动优惠。"),
-                    ("coupon", "WELCOME10"),
-                    ("url", "https://yourdomain.com"),
-                ],
-            ),
-        ] {
-            templates.push(SavedTemplate { id, name: name.into(), favorite: true, content: TemplateContent {
-                subject: subject.into(), text_enabled: true, text: body.into(),
-                html_enabled: true,
-                html: format!("<!doctype html><html lang=\"zh-CN\"><meta charset=\"utf-8\"><body style=\"font-family:sans-serif;line-height:1.8;padding:32px\">{}</body></html>", body.replace('\n', "<br>")),
-                variables: variables.into_iter().map(|(key, value)| VariableRow { key: key.into(), value: value.into(), json: false }).collect(),
-                ..Default::default()
-            }});
-        }
+        let preset =
+            |id, name: &str, subject: &str, html: &str, text: &str, values: &[(&str, &str)]| {
+                let mut variables = vec![
+                    VariableRow {
+                        key: "product".into(),
+                        value: "ShrimpAPI".into(),
+                        json: false,
+                    },
+                    VariableRow {
+                        key: "support_email".into(),
+                        value: "support@yourdomain.com".into(),
+                        json: false,
+                    },
+                ];
+                variables.extend(values.iter().map(|(key, value)| VariableRow {
+                    key: (*key).into(),
+                    value: (*value).into(),
+                    json: false,
+                }));
+                SavedTemplate {
+                    id,
+                    name: name.into(),
+                    favorite: true,
+                    content: TemplateContent {
+                        subject: subject.into(),
+                        html_enabled: true,
+                        html: html.into(),
+                        text_enabled: true,
+                        text: text.into(),
+                        variables,
+                        rules: Vec::new(),
+                    },
+                }
+            };
         Self {
-            templates,
+            templates: vec![
+                preset(
+                    1,
+                    "新用户注册",
+                    "{{name}}，欢迎注册 {{product}}",
+                    include_str!("../assets/templates/new-user-registration.html"),
+                    include_str!("../assets/templates/new-user-registration.txt"),
+                    &[
+                        ("welcome_message", "感谢注册，欢迎开始使用模型 API 服务。"),
+                        ("console_url", "https://yourdomain.com/console"),
+                        ("docs_url", "https://yourdomain.com/docs"),
+                    ],
+                ),
+                preset(
+                    2,
+                    "模型上新",
+                    "{{product}} 模型上新：{{model_name}}",
+                    include_str!("../assets/templates/model-launch.html"),
+                    include_str!("../assets/templates/model-launch.txt"),
+                    &[
+                        ("model_name", "新模型名称"),
+                        ("provider", "模型提供方"),
+                        ("model_id", "provider/model-name"),
+                        (
+                            "model_summary",
+                            "请填写模型能力、适用场景和本次上新的主要亮点。",
+                        ),
+                        ("context_window", "以模型详情页为准"),
+                        ("pricing", "以控制台显示为准"),
+                        ("console_url", "https://yourdomain.com/console"),
+                        ("model_docs_url", "https://yourdomain.com/docs/models"),
+                    ],
+                ),
+                preset(
+                    3,
+                    "服务通知",
+                    "{{product}} 服务通知：{{notice_title}}",
+                    include_str!("../assets/templates/service-notice.html"),
+                    include_str!("../assets/templates/service-notice.txt"),
+                    &[
+                        ("notice_title", "计划维护通知"),
+                        ("notice_type", "计划维护"),
+                        ("start_time", "请填写开始时间（含时区）"),
+                        ("end_time", "请填写预计结束时间（含时区）"),
+                        ("affected_services", "请填写受影响的服务或模型"),
+                        ("impact", "请填写对请求、延迟或可用性的具体影响。"),
+                        ("action_required", "请根据业务需要安排重试或切换备用模型。"),
+                        ("status_url", "https://yourdomain.com/status"),
+                    ],
+                ),
+            ],
             startup_template: Some(1),
         }
     }

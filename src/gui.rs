@@ -50,7 +50,11 @@ pub fn run() -> Result<()> {
             configure_style(&cc.egui_ctx);
             let mut app = EmailApp::restore(loaded.settings);
             app.store = Some(store);
+            if loaded.needs_save {
+                app.persisted = None;
+            }
             if let Some(warning) = loaded.warning {
+                app.status = warning.clone();
                 app.storage_status = warning;
             }
             match token {

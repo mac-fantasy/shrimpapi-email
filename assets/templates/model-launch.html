@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{model_name}} 现已上线</title>
+  </head>
+  <body style="margin:0;padding:32px 16px;background:#f4f6f8;color:#172b4d;font-family:Arial,'PingFang SC',sans-serif;">
+    <table role="presentation" style="width:100%;max-width:600px;margin:0 auto;border-collapse:collapse;background:#fff;">
+      <tr><td style="height:5px;background:#ff7a00;"></td></tr>
+      <tr><td style="padding:32px;">
+        <p style="margin:0 0 24px;color:#ef6c00;font-size:16px;font-weight:bold;">{{product}}</p>
+        <p style="margin:0 0 12px;color:#64748b;font-size:12px;">模型上新</p>
+        <h1 style="margin:0 0 20px;font-size:26px;">{{model_name}} 现已上线</h1>
+        <p style="line-height:1.8;">你好，{{name}}！{{product}} 已上新 {{model_name}}，欢迎前往控制台查看和体验。</p>
+        <p style="line-height:1.8;">{{model_summary}}</p>
+        <table role="presentation" style="width:100%;border-collapse:collapse;background:#f4f6f8;font-size:14px;line-height:1.8;">
+          <tr><td style="padding:12px 16px;color:#64748b;">模型提供方</td><td style="padding:12px 16px;">{{provider}}</td></tr>
+          <tr><td style="padding:12px 16px;color:#64748b;">调用标识</td><td style="padding:12px 16px;word-break:break-all;">{{model_id}}</td></tr>
+          <tr><td style="padding:12px 16px;color:#64748b;">上下文长度</td><td style="padding:12px 16px;">{{context_window}}</td></tr>
+          <tr><td style="padding:12px 16px;color:#64748b;">价格说明</td><td style="padding:12px 16px;">{{pricing}}</td></tr>
+        </table>
+        <p style="margin:28px 0;"><a href="{{console_url}}" style="display:inline-block;padding:12px 24px;background:#ff7a00;color:#fff;text-decoration:none;border-radius:6px;">查看并体验模型</a></p>
+        <p style="line-height:1.8;">模型详情与接入说明：<a href="{{model_docs_url}}" style="color:#172b4d;">{{model_docs_url}}</a></p>
+        <p style="margin:32px 0 0;padding-top:20px;border-top:1px solid #e5eaf0;color:#64748b;font-size:12px;line-height:1.8;">此邮件发送至 {{email}}。如需帮助，请联系 <a href="mailto:{{support_email}}" style="color:#172b4d;">{{support_email}}</a>。</p>
+      </td></tr>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+你好，{{name}}！
+
+{{product}} 服务通知：{{notice_title}}
+通知类型：{{notice_type}}
+
+开始时间：{{start_time}}
+预计结束：{{end_time}}
+影响范围：{{affected_services}}
+
+可能的影响：
+{{impact}}
+
+建议操作：
+{{action_required}}
+
+查看服务状态：{{status_url}}
+感谢你的理解与支持，我们会通过服务状态页同步后续进展。
+
+此邮件发送至 {{email}}。如需帮助，请联系 {{support_email}}。

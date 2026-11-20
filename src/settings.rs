@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use crate::{SendReport, editor::CampaignEditor, templates::TemplateLibrary};
 
 pub const APP_ID: &str = "com.shrimpapi.email";
-pub const SCHEMA_VERSION: u32 = 1;
+pub const SCHEMA_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -107,6 +107,13 @@ impl AppSettings {
             value["version"] = SCHEMA_VERSION.into();
         }
         let mut settings: Self = serde_json::from_value(value).context("设置结构无效")?;
+        if version < 2 {
+            // Replace the previous catalog once, including saved copies, as part
+            // of the requested template reset. All other settings and drafts stay intact.
+            settings.library = TemplateLibrary::default();
+            settings.ui.selected_template = Some(1);
+            settings.version = SCHEMA_VERSION;
+        }
         settings.library.validate()?;
         settings.timeout_secs = settings.timeout_secs.clamp(1, 300);
         if settings
@@ -136,6 +143,7 @@ pub struct SettingsStore {
 pub struct LoadedSettings {
     pub settings: AppSettings,
     pub warning: Option<String>,
+    pub needs_save: bool,
 }
 
 impl SettingsStore {
@@ -158,13 +166,37 @@ impl SettingsStore {
         self.directory.join("window.ron")
     }
 
+    fn preserve_upgrade_backup(&self, bytes: &[u8]) -> Result<bool> {
+        let value: serde_json::Value = serde_json::from_slice(bytes)?;
+        let version = value.get("version").and_then(|v| v.as_u64()).unwrap_or(0);
+        if version >= u64::from(SCHEMA_VERSION) {
+            return Ok(false);
+        }
+        let path = self
+            .directory
+            .join(format!("settings.v{version}.backup.json"));
+        if !path.exists() {
+            atomic_write(&path, bytes)?;
+        }
+        Ok(true)
+    }
+
+    fn decode_stored(&self, bytes: &[u8]) -> Result<LoadedSettings> {
+        let settings = AppSettings::decode(bytes)?;
+        let migrated = self.preserve_upgrade_backup(bytes)?;
+        Ok(LoadedSettings {
+            settings,
+            warning: migrated.then(|| {
+                "模板库已替换为「新用户注册、模型上新、服务通知」，升级前设置已备份。".into()
+            }),
+            needs_save: migrated,
+        })
+    }
+
     pub fn load(&self) -> Result<LoadedSettings> {
         match fs::read(self.path()) {
-            Ok(bytes) => match AppSettings::decode(&bytes) {
-                Ok(settings) => Ok(LoadedSettings {
-                    settings,
-                    warning: None,
-                }),
+            Ok(bytes) => match self.decode_stored(&bytes) {
+                Ok(loaded) => Ok(loaded),
                 Err(error) => {
                     // A future schema must never silently fall back and be overwritten.
                     if serde_json::from_slice::<serde_json::Value>(&bytes)
@@ -174,29 +206,28 @@ impl SettingsStore {
                     {
                         return Err(error);
                     }
-                    let settings = AppSettings::decode(
+                    let mut loaded = self.decode_stored(
                         &fs::read(self.backup_path())
                             .context("设置损坏且没有可恢复的备份，原文件已保留")?,
                     )?;
                     // Retain the corrupt original for investigation before autosave.
                     atomic_write(&self.directory.join("settings.damaged.json"), &bytes)?;
-                    Ok(LoadedSettings {
-                        settings,
-                        warning: Some(format!("设置读取失败，已从备份恢复：{error:#}")),
-                    })
+                    loaded.warning = Some(format!("设置读取失败，已从备份恢复：{error:#}"));
+                    loaded.needs_save = true;
+                    Ok(loaded)
                 }
             },
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
                 if self.backup_path().exists() {
-                    let settings = AppSettings::decode(&fs::read(self.backup_path())?)?;
-                    Ok(LoadedSettings {
-                        settings,
-                        warning: Some("设置文件缺失，已从备份恢复。".into()),
-                    })
+                    let mut loaded = self.decode_stored(&fs::read(self.backup_path())?)?;
+                    loaded.warning = Some("设置文件缺失，已从备份恢复。".into());
+                    loaded.needs_save = true;
+                    Ok(loaded)
                 } else {
                     Ok(LoadedSettings {
                         settings: AppSettings::default(),
                         warning: None,
+                        needs_save: true,
                     })
                 }
             }
@@ -219,6 +250,7 @@ impl SettingsStore {
             }
             // Back up only valid data; never replace a good backup with corrupt input.
             if AppSettings::decode(&bytes).is_ok() {
+                self.preserve_upgrade_backup(&bytes)?;
                 atomic_write(&self.backup_path(), &bytes)?;
             }
         }

@@ -35,17 +35,31 @@ fn example_campaign() -> Campaign {
 fn example_applies_global_domain_exact_and_recipient_variables() {
     let emails = prepare(&example_campaign()).unwrap();
     assert_eq!(emails.len(), 3);
-    for (email, name, plan, coupon) in [
-        (&emails[0], "Alice", "团队版", "ALICE30"),
-        (&emails[1], "Bob", "专业版", "BOB50"),
-        (&emails[2], "carol", "基础版", "WELCOME10"),
+    for (email, name, welcome, console) in [
+        (
+            &emails[0],
+            "Alice",
+            "欢迎加入团队，前往控制台开始协作。",
+            "https://yourdomain.com/console/alice",
+        ),
+        (
+            &emails[1],
+            "Bob",
+            "欢迎使用专业服务，如需接入帮助请联系我们。",
+            "https://yourdomain.com/console/bob",
+        ),
+        (
+            &emails[2],
+            "carol",
+            "感谢注册，欢迎开始使用模型 API 服务。",
+            "https://yourdomain.com/console",
+        ),
     ] {
-        assert_eq!(
-            email.subject,
-            format!("{name}，欢迎使用 ShrimpAPI · {plan}")
-        );
-        assert!(email.html.as_ref().unwrap().contains(coupon));
-        assert!(email.text.as_ref().unwrap().contains(coupon));
+        assert_eq!(email.subject, format!("{name}，欢迎注册 ShrimpAPI"));
+        assert!(email.html.as_ref().unwrap().contains(welcome));
+        assert!(email.text.as_ref().unwrap().contains(welcome));
+        assert!(email.html.as_ref().unwrap().contains(console));
+        assert!(email.text.as_ref().unwrap().contains(console));
         assert_eq!(email.message.envelope().to().len(), 1);
         assert_eq!(
             email.message.envelope().to()[0].to_string(),

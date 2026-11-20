@@ -1,0 +1,14 @@
+你好，{{name}}！
+
+{{product}} 模型上新：{{model_name}}
+{{model_summary}}
+
+模型提供方：{{provider}}
+调用标识：{{model_id}}
+上下文长度：{{context_window}}
+价格说明：{{pricing}}
+
+查看并体验模型：{{console_url}}
+模型详情与接入说明：{{model_docs_url}}
+
+此邮件发送至 {{email}}。如需帮助，请联系 {{support_email}}。

@@ -42,7 +42,7 @@ fn imported_recipients_keep_names_typed_variables_and_personal_overrides() {
         &path,
         json!([
             {"email": "alice@example.com", "name": "Imported Alice", "variables": {
-                "plan": "导入方案", "coupon": "IMPORT40", "show_coupon": false
+                "welcome_message": "导入收件人的专属欢迎语", "preview_flag": false
             }},
             "bob@example.net"
         ])
@@ -57,11 +57,16 @@ fn imported_recipients_keep_names_typed_variables_and_personal_overrides() {
         .collect();
     let messages = draft.prepare().unwrap();
     assert_eq!(messages.len(), 2);
-    assert_eq!(
-        messages[0].subject,
-        "Imported Alice，欢迎使用 ShrimpAPI · 导入方案"
+    assert_eq!(messages[0].subject, "Imported Alice，欢迎注册 ShrimpAPI");
+    assert!(
+        messages[0]
+            .html
+            .as_ref()
+            .unwrap()
+            .contains("导入收件人的专属欢迎语")
     );
-    assert!(!messages[0].html.as_ref().unwrap().contains("IMPORT40"));
+    let recipient = serde_json::to_value(&draft.campaign().unwrap().recipients[0]).unwrap();
+    assert_eq!(recipient["variables"]["preview_flag"], false);
     assert_eq!(messages[1].recipient, "bob@example.net");
     assert_eq!(draft.campaign().unwrap().recipients.len(), 2);
 }

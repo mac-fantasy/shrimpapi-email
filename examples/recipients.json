@@ -2,7 +2,10 @@
   {
     "email": "alice@example.com",
     "name": "Alice",
-    "variables": { "coupon": "PERSONAL40" }
+    "variables": {
+      "welcome_message": "欢迎加入，请从专属控制台开始。",
+      "console_url": "https://yourdomain.com/console/personal"
+    }
   },
   "bob@example.net"
 ]

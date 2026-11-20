@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>欢迎注册 {{product}}</title>
+  </head>
+  <body style="margin:0;padding:32px 16px;background:#f4f6f8;color:#172b4d;font-family:Arial,'PingFang SC',sans-serif;">
+    <table role="presentation" style="width:100%;max-width:600px;margin:0 auto;border-collapse:collapse;background:#fff;">
+      <tr><td style="height:5px;background:#ff7a00;"></td></tr>
+      <tr><td style="padding:32px;">
+        <p style="margin:0 0 24px;color:#ef6c00;font-size:16px;font-weight:bold;">{{product}}</p>
+        <p style="margin:0 0 12px;color:#64748b;font-size:12px;">账号注册成功</p>
+        <h1 style="margin:0 0 20px;font-size:26px;">你好，{{name}}！</h1>
+        <p style="line-height:1.8;">欢迎注册 {{product}}，你的账号已准备就绪。</p>
+        <p style="line-height:1.8;">{{welcome_message}}</p>
+        <p style="padding:16px;background:#fff5eb;line-height:1.8;">注册邮箱：<strong>{{email}}</strong></p>
+        <p style="line-height:1.8;">接下来，你可以进入控制台查看可用模型、创建 API 密钥，并参考接入文档开始使用。</p>
+        <p style="margin:28px 0;"><a href="{{console_url}}" style="display:inline-block;padding:12px 24px;background:#ff7a00;color:#fff;text-decoration:none;border-radius:6px;">进入控制台</a></p>
+        <p style="line-height:1.8;">接入文档：<a href="{{docs_url}}" style="color:#172b4d;">{{docs_url}}</a></p>
+        <p style="margin:32px 0 0;padding-top:20px;border-top:1px solid #e5eaf0;color:#64748b;font-size:12px;line-height:1.8;">此邮件发送至 {{email}}。如需帮助，请联系 <a href="mailto:{{support_email}}" style="color:#172b4d;">{{support_email}}</a>。</p>
+      </td></tr>
+    </table>
+  </body>
+</html>

@@ -110,8 +110,8 @@ impl CampaignEditor {
         let campaign = serde_json::from_str(include_str!("../examples/campaign.json"))?;
         Ok(Self::from_campaign(
             campaign,
-            Some(include_str!("../examples/welcome.html").into()),
-            Some(include_str!("../examples/welcome.txt").into()),
+            Some(include_str!("../assets/templates/new-user-registration.html").into()),
+            Some(include_str!("../assets/templates/new-user-registration.txt").into()),
         ))
     }
 

@@ -12,24 +12,46 @@ fn visual_editor_renders_without_template_files() {
     let draft = CampaignEditor::example().unwrap();
     let messages = draft.prepare().unwrap();
     assert_eq!(messages.len(), 3);
-    assert!(messages[0].html.as_ref().unwrap().contains("ALICE30"));
-    assert!(messages[1].text.as_ref().unwrap().contains("BOB50"));
+    assert!(
+        messages[0]
+            .html
+            .as_ref()
+            .unwrap()
+            .contains("https://yourdomain.com/console/alice")
+    );
+    assert!(
+        messages[1]
+            .text
+            .as_ref()
+            .unwrap()
+            .contains("https://yourdomain.com/console/bob")
+    );
     assert_eq!(draft.campaign().unwrap().html, None);
 }
 
 #[test]
 fn saving_editor_and_reopening_preserves_types_templates_and_precedence() {
-    let draft = CampaignEditor::example().unwrap();
+    let mut draft = CampaignEditor::example().unwrap();
+    draft.variables.push(VariableRow {
+        key: "preview_flag".into(),
+        value: "false".into(),
+        json: true,
+    });
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("nested/campaign.json");
     draft.save(&path).unwrap();
     let reopened = CampaignEditor::load(&path).unwrap();
-    assert_eq!(draft, reopened);
+    assert_eq!(draft.html, reopened.html);
+    assert_eq!(draft.text, reopened.text);
+    assert_eq!(
+        serde_json::to_value(draft.campaign().unwrap()).unwrap(),
+        serde_json::to_value(reopened.campaign().unwrap()).unwrap(),
+    );
     let campaign = Campaign::load(&path).unwrap();
-    assert_eq!(campaign.variables["show_coupon"], true);
+    assert_eq!(campaign.variables["preview_flag"], false);
     assert!(campaign.html.unwrap().is_file());
     let messages = prepare(&Campaign::load(&path).unwrap()).unwrap();
-    assert_eq!(messages[0].subject, "Alice，欢迎使用 ShrimpAPI · 团队版");
+    assert_eq!(messages[0].subject, "Alice，欢迎注册 ShrimpAPI");
     let stored: serde_json::Value = serde_json::from_slice(&fs::read(path).unwrap()).unwrap();
     assert_eq!(stored["html"], "campaign.html");
     assert_eq!(stored["text"], "campaign.txt");
