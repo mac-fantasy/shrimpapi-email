@@ -11,7 +11,8 @@ sh scripts/bundle-macos.sh --universal
 bundle="target/ShrimpAPI Email.app"
 test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$bundle/Contents/Info.plist")" = "$app_version"
 test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$bundle/Contents/Info.plist")" = com.shrimpapi.email
-lipo -verify_arch arm64 x86_64 "$bundle/Contents/MacOS/shrimpapi-email"
+lipo "$bundle/Contents/MacOS/shrimpapi-email" -verify_arch arm64
+lipo "$bundle/Contents/MacOS/shrimpapi-email" -verify_arch x86_64
 codesign --verify --deep --strict "$bundle"
 mkdir -p dist
 archive="ShrimpAPI.Email-$app_version-macos-universal.zip"
